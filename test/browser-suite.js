@@ -11,7 +11,7 @@ import { sum, product, mean, median, mode, range } from "../safe-math.js";
 
 describe("safe-math", function () {
 
-  var { expect } = global.chai;
+  var { expect } = chai;
 
   describe("sum", function () {
     it("handles a single value", () => {
