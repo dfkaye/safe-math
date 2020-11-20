@@ -1,7 +1,7 @@
 {
   "name": "@dfkaye/safe-math",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Safer floating-point math operations in JavaScript that return results we expect, so that 0.1 + 0.2 adds up to 0.3, e.g.",
   "main": "safe-math.js",
   "directories": {
