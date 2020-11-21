@@ -1,6 +1,6 @@
 /** 
- * Safer Math operations in JavaScript, to fend off the binary-to-decimal
- * impedance mismatch.
+ * Safer floating-point math operations in JavaScript, to avoid binary-decimal
+ * impedance mismatches.
  * 
  * Examples:
  * 1. Adding 0.1 + 0.2 should return 0.3 instead of 0.30000000000000004.
@@ -8,40 +8,75 @@
  * 3. Any value can be an object whose valueOf() method returns a numeric value,
  *    i.e., a functionally numeric value.
  * 
- * Library contains 3 internal helper functions:
+ * Library contains 4 internal helper functions:
  * 1. for extracting values from a series and ignoring non-numeric values,
  * 2. checking that a value is at least functionally numeric,
- * 3. expanding values to the largest
+ * 3. expanding values to the largest integer string,
+ * 4. ascending sort function, used by median.
  */
 
-export { sum, product, mean, median, mode, range }
+export { add, minus, multiply, divide, mean, median, mode, range }
 
 /**
- * @function sum, for safely adding numbers.
+ * @function add, for safely adding numbers.
  * 
  * @param  {...any} values
- * @returns {number}
+ * @returns {number} sum
  */
-function sum(...values) {
+function add(...values) {
   return getValues(...values).reduce(function (current, next) {
-    var { left, right, by } = expand(current, next);
+    var { left, right, exponent } = expand(current, next);
 
-    return (left + right) / by;
+    return (left + right) / exponent;
   }, 0);
 }
 
 /**
- * @function product, for safely multiplying numbers.
+ * @function minus, for safely subtracting numbers.
  * 
  * @param  {...any} values
- * @returns {number}
+ * @returns {number} difference
  */
-function product(...values) {
-  return getValues(...values).reduce(function (current, next) {
-    var { left, right, by } = expand(current, next);
+function minus(...values) {
+  var numbers = getValues(...values);
+  var first = numbers.shift()
 
-    return (left * right) / (by * by);
+  return numbers.reduce(function (current, next) {
+    var { left, right, exponent } = expand(current, next);
+
+    return (left - right) / exponent;
+  }, first);
+}
+
+/**
+ * @function multiply, for safely multiplying numbers.
+ * 
+ * @param  {...any} values
+ * @returns {number} product
+ */
+function multiply(...values) {
+  return getValues(...values).reduce(function (current, next) {
+    var { left, right, exponent } = expand(current, next);
+
+    return (left * right) / (exponent * exponent);
   }, 1);
+}
+
+/**
+ * @function divide, for safely dividing numbers.
+ * 
+ * @param  {...any} values
+ * @returns {number} quotient
+ */
+function divide(...values) {
+  var numbers = getValues(...values);
+  var first = numbers.shift()
+
+  return numbers.reduce(function (current, next) {
+    var { left, right, exponent } = expand(current, next);
+
+    return (left / right) / exponent;
+  }, first);
 }
 
 /**
@@ -58,13 +93,13 @@ function mean(...values) {
     var e = expand(next);
 
     /*
-     * If next is a number, call sum() and increment the set size.
-     * Else just return current sum.
+     * If next is a number, call add() and increment the set size.
+     * Else just return current add.
      */
 
     return (
       +e.left === +e.left
-        ? (size += 1, sum(current, next))
+        ? (size += 1, add(current, next))
         : current
     );
   }, size);
@@ -90,18 +125,21 @@ function median(...values) {
     return 0;
   }
 
-  var floor = Math.floor(numbers.length / 2);
+  // Need to sort our numbers first, then find the middle index.
+  var sorted = ascending(numbers);
+
+  var floor = Math.floor(sorted.length / 2);
 
   // Coerce Strings, Booleans, and functionally numeric values.
-  return +(numbers[floor])
+  return +(sorted[floor])
 }
 
 /**
  * @function mode, for safely calculating the highest occurring numbers in a
  * series.
  * 
- * Note that function always returns an array. If the incoming series is empty,
- * an empty array is returned.
+ * Note that function always returns an Array. If the incoming series is empty,
+ * an empty Array is returned.
  * 
  * @param  {...any} values 
  * @returns {Array} 
@@ -176,15 +214,16 @@ function range(...values) {
   });
 
   /*
-   * Use sum with positive and negative values to insure internal use of the
+   * Use add with positive and negative values to insure internal use of the
    * expand function.
    */
 
-  return sum(high, -low);
+  return add(high, -low);
 }
 
 
 /* Helper functions */
+
 
 /**
  * @function getValues, extracts functionally numeric values in a series,
@@ -198,17 +237,7 @@ function getValues(...values) {
     values = values[0];
   }
 
-  return values.filter(isNumeric).sort((a, b) => {
-    if (a < b) {
-      return -1
-    }
-
-    if (a > b) {
-      return 1;
-    }
-
-    return 0;
-  });
+  return values.filter(isNumeric)
 }
 
 /**
@@ -244,40 +273,40 @@ function isNumeric(a) {
 
 /**
  * @function expand, accepts two parameters, coerces them to integers, and
- * returns an object containing the left & right integer pair, plus an
- * expansion factor by which to reduce the result of an operation on them to
- * their original decimal precision.
+ * returns an object containing the x & y integer pair, plus the exponent by
+ * which to reduce the result of an operation on them to their original decimal
+ * precision.
  *
  * Originally part of gist at
  * https://gist.github.com/dfkaye/c2210ceb0f813dda498d22776f98d48a
  * 
- * @param {*} left 
- * @param {*} right
+ * @param {*} x 
+ * @param {*} y
  * @returns {object}
  */
-function expand(left, right) {
+function expand(x, y) {
   // Object(value).valueOf() trick for "functionally numeric" objects.
-  left = Object(left).valueOf();
-  right = Object(right).valueOf();
+  x = Object(x).valueOf();
+  y = Object(y).valueOf();
 
   // Coerce to strings to numbers (and remove formatting commas).
   var reMatch = /string/
   var reCommas = /[\,]/g
 
-  if (reMatch.test(typeof left)) {
-    left = +left.toString().replace(reCommas, '');
+  if (reMatch.test(typeof x)) {
+    x = +x.toString().replace(reCommas, '');
   }
 
-  if (reMatch.test(typeof right)) {
-    right = +right.toString().replace(reCommas, '');
+  if (reMatch.test(typeof y)) {
+    y = +y.toString().replace(reCommas, '');
   }
 
   // Expand each to integer values based on largest mantissa length.
   var reDecimal = /[\.]/
-  var ml = reDecimal.test(left) && left.toString().split('.')[1].length
-  var mr = reDecimal.test(right) && right.toString().split('.')[1].length
-  var pow = ml > mr ? ml : mr
-  var by = Math.pow(10, pow)
+  var a = reDecimal.test(x) && x.toString().split('.')[1].length
+  var b = reDecimal.test(y) && y.toString().split('.')[1].length
+  var c = a > b ? a : b
+  var d = Math.pow(10, c)
 
   /*
    * left & right number pair, plus the expansion factor.
@@ -285,10 +314,29 @@ function expand(left, right) {
    * e.g., {} => NaN, true => 1, [4] => '4' => 4
    */
   return {
-    left: left * by,
-    right: right * by,
-    by
+    left: x * d,
+    right: y * d,
+    exponent: d
   }
 }
 
+/**
+ * @function ascending returns a copy of given values sorted in ascending
+ * numeric order.
+ * 
+ * @param  {...any} values 
+ * @returns {Array} sorted values
+ */
+function ascending(values) {
+  return values.sort((a, b) => {
+    if (a < b) {
+      return -1
+    }
 
+    if (a > b) {
+      return 1;
+    }
+
+    return 0;
+  });
+}

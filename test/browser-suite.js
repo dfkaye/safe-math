@@ -7,39 +7,39 @@
  * + live demo running this suite: https://dfkaye.com/demos/safe-math-test-suite/
  */
 
-import { sum, product, mean, median, mode, range } from "../safe-math.js";
+import { add, minus, multiply, divide, mean, median, mode, range } from "../safe-math.js";
 
 describe("safe-math", function () {
 
   var { expect } = chai;
 
-  describe("sum", function () {
+  describe("add", function () {
     it("handles a single value", () => {
-      var actual = sum(1);
+      var actual = add(1);
 
       expect(actual).to.equal(1);
     });
 
-    it('handles multiple values', () => {
-      var actual = sum(1, 2, 3);
+    it("handles multiple values", () => {
+      var actual = add(1, 2, 3);
 
       expect(actual).to.equal(6);
     });
 
-    it('handles values array', () => {
-      var actual = sum([1, 2, 3]);
+    it("handles values array", () => {
+      var actual = add([1, 2, 3]);
 
       expect(actual).to.equal(6);
     });
 
-    it('handles comma-formatted string values', () => {
-      var actual = sum("1,000", 1);
+    it("handles comma-formatted string values", () => {
+      var actual = add("1,000", 1);
 
       expect(actual).to.equal(1001);
     });
 
-    it('handles scientific notation', () => {
-      var actual = sum([
+    it("handles scientific notation", () => {
+      var actual = add([
         987.654E6, // numeric
         "987.654E6" // string
       ]);
@@ -49,8 +49,8 @@ describe("safe-math", function () {
       expect(actual).to.equal(expected);
     });
 
-    it('handles negative values', () => {
-      var actual = sum([
+    it("handles negative values", () => {
+      var actual = add([
         -987.654E6, // numeric
         "987.654E6" // string
       ]);
@@ -58,8 +58,8 @@ describe("safe-math", function () {
       expect(actual).to.equal(0);
     });
 
-    it('handles boolean values', () => {
-      var actual = sum([
+    it("handles boolean values", () => {
+      var actual = add([
         true,
         false,
         Boolean(true),
@@ -71,8 +71,8 @@ describe("safe-math", function () {
       expect(actual).to.equal(3);
     });
 
-    it('handles String objects', () => {
-      var actual = sum([
+    it("handles String objects", () => {
+      var actual = add([
         new String(0.1),
         new String(0.2)
       ]);
@@ -81,7 +81,7 @@ describe("safe-math", function () {
     });
 
     it("handles 'functionally numeric' objects", () => {
-      var actual = sum([
+      var actual = add([
         {
           valueOf() { return 0.1 }
         },
@@ -93,47 +93,141 @@ describe("safe-math", function () {
       expect(actual).to.equal(0.3);
     });
 
-    it('0.1 + 0.2 returns 0.3', () => {
-      var actual = sum([0.1, 0.2]);
+    it("0.1 + 0.2 returns 0.3", () => {
+      var actual = add([0.1, 0.2]);
 
       expect(actual).to.equal(0.3);
     });
 
-    it('0.1 - 0.3 returns -0.2', () => {
-      var actual = sum([0.1, -0.3]);
+    it("0.1 - 0.3 returns -0.2", () => {
+      var actual = add([0.1, -0.3]);
 
       expect(actual).to.equal(-0.2);
     });
     //- 0.15 / 0.1 should return 1.5 instead of 1.4999999999999998.
   })
 
-  describe("product", function () {
-    it("handles a single value", () => {
-      var actual = product(1);
+  describe("minus", function () {
+    it("handles a single value - should be unchanged", () => {
+      var actual = minus(1);
 
       expect(actual).to.equal(1);
     });
 
-    it('handles multiple values', () => {
-      var actual = product(1, 2, 3);
+    it("handles multiple values", () => {
+      var actual = minus(1, 2, 3);
+
+      // 1 - 2 - 3
+      expect(actual).to.equal(-4);
+    });
+
+    it("handles values array", () => {
+      var actual = minus([1, 2, 3]);
+
+      // 1 - 2 - 3
+      expect(actual).to.equal(-4);
+    });
+
+    it("handles comma-formatted string values", () => {
+      var actual = minus("1,000", 1);
+
+      expect(actual).to.equal(999);
+    });
+
+    it("handles scientific notation", () => {
+      var actual = minus([
+        987.654E6, // numeric
+        "987.654E6" // string
+      ]);
+
+      expect(actual).to.equal(0);
+    });
+
+    it("handles negative values", () => {
+      var actual = minus([
+        -987.654E6, // numeric
+        "987.654E6" // string
+      ]);
+
+      expect(actual).to.equal(-987.654E6 * 2);
+    });
+
+    it("handles boolean values", () => {
+      var actual = minus([
+        true, // 1
+        false, // 0
+        Boolean(true), // 1
+        Boolean(false), // 0
+        new Boolean(true), // 1
+        new Boolean(false) // 0
+      ]);
+
+      // 1 - 0 - 1 - 0 - 1 - 0
+      expect(actual).to.equal(-1);
+    });
+
+    it("handles String objects", () => {
+      var actual = minus([
+        new String(0.1),
+        new String(0.3)
+      ]);
+
+      expect(actual).to.equal(-0.2);
+    });
+
+    it("handles 'functionally numeric' objects", () => {
+      var actual = minus([
+        {
+          valueOf() { return 0.1 }
+        },
+        {
+          valueOf() { return 0.3 }
+        }
+      ]);
+
+      expect(actual).to.equal(-0.2);
+    });
+
+    it("0.1 - -0.2 returns 0.3", () => {
+      var actual = minus([0.1, -0.2]);
+
+      expect(actual).to.equal(0.3);
+    });
+
+    it("0.1 - 0.3 returns -0.2", () => {
+      var actual = minus([0.1, 0.3]);
+
+      expect(actual).to.equal(-0.2);
+    });
+  })
+
+  describe("multiply", function () {
+    it("handles a single value", () => {
+      var actual = multiply(1);
+
+      expect(actual).to.equal(1);
+    });
+
+    it("handles multiple values", () => {
+      var actual = multiply(1, 2, 3);
 
       expect(actual).to.equal(6);
     });
 
-    it('handles values array', () => {
-      var actual = product([1, 2, 3]);
+    it("handles values array", () => {
+      var actual = multiply([1, 2, 3]);
 
       expect(actual).to.equal(6);
     });
 
-    it('handles comma-formatted string values', () => {
-      var actual = product("1,000", 1);
+    it("handles comma-formatted string values", () => {
+      var actual = multiply("1,000", 1);
 
       expect(actual).to.equal(1000);
     });
 
-    it('handles scientific notation', () => {
-      var actual = product([
+    it("handles scientific notation", () => {
+      var actual = multiply([
         987.654E6, // numeric
         "987.654E6" // string
       ]);
@@ -143,8 +237,8 @@ describe("safe-math", function () {
       expect(actual).to.equal(expected);
     });
 
-    it('handles negative values', () => {
-      var actual = product([
+    it("handles negative values", () => {
+      var actual = multiply([
         -987.654E6, // numeric
         "987.654E6" // string
       ]);
@@ -154,8 +248,8 @@ describe("safe-math", function () {
       expect(actual).to.equal(expected);
     });
 
-    it('handles boolean values', () => {
-      var actual = product([
+    it("handles boolean values", () => {
+      var actual = multiply([
         true,
         false,
         Boolean(true),
@@ -167,8 +261,8 @@ describe("safe-math", function () {
       expect(actual).to.equal(0);
     });
 
-    it('handles String objects', () => {
-      var actual = product([
+    it("handles String objects", () => {
+      var actual = multiply([
         new String(0.1),
         new String(0.2)
       ]);
@@ -177,7 +271,7 @@ describe("safe-math", function () {
     });
 
     it("handles 'functionally numeric' objects", () => {
-      var actual = product([
+      var actual = multiply([
         {
           valueOf() { return 0.1 }
         },
@@ -190,17 +284,98 @@ describe("safe-math", function () {
     });
 
     it("0.1 * 0.1 returns 0.01", () => {
-      var actual = product([0.1, 0.1]);
+      var actual = multiply([0.1, 0.1]);
 
       expect(actual).to.equal(0.01);
     });
 
-    it('0.15 / 0.1 returns 1.5', () => {
-      var actual = product([0.15, (1 / 0.1)]);
+    it("0.15 / 0.1 returns 1.5", () => {
+      var actual = multiply([0.15, (1 / 0.1)]);
 
       expect(actual).to.equal(1.5);
     });
   });
+
+  describe("divide", () => {
+    it("handles a single value, returns it unmodified", () => {
+      expect(divide(1)).to.equal(1)
+    })
+
+    it("handles multiple values", () => {
+      expect(divide(5, 5, 5)).to.equal(.2)
+    })
+
+    it("handles values array", () => {
+      expect(divide([2, 2, 2])).to.equal(0.5)
+    })
+
+    it("handles comma-formatted string values", () => {
+      var actual = divide("1,001", 2);
+
+      expect(actual).to.equal(500.5);
+    })
+
+    it("handles scientific notation", () => {
+      var actual = divide([
+        987.654E6, // numeric
+        "987.654E6" // string
+      ]);
+
+      expect(actual).to.equal(1);
+    })
+
+    it("handles negative values", () => {
+      expect(divide([-2, -2, -2])).to.equal(-0.5)
+    })
+
+    it("handles boolean values", () => {
+      var actual = divide([
+        true,
+        false,
+        Boolean(true),
+        Boolean(false),
+        new Boolean(true),
+        new Boolean(false)
+      ]);
+
+      expect(actual).to.equal(Number.POSITIVE_INFINITY);
+      expect(divide(true, 5)).to.equal(0.2);
+    })
+
+    it("handles String objects", () => {
+      var actual = divide([
+        new String(0.1),
+        new String(0.2)
+      ]);
+
+      expect(actual).to.equal(0.05);
+    })
+
+    it("handles 'functionally numeric' objects", () => {
+      var actual = divide([
+        {
+          valueOf() { return 0.1 }
+        },
+        {
+          valueOf() { return 0.2 }
+        }
+      ]);
+
+      expect(actual).to.equal(0.05);
+    })
+
+    it("0.1 / 10 returns 0.01", () => {
+      var actual = divide(0.1, 10)
+
+      expect(actual).to.equal(0.001)
+    })
+
+    it("0.15 / 0.1 returns 1.5", () => {
+      var actual = divide(0.15, 0.1)
+
+      expect(actual).to.equal(0.015)
+    })
+  })
 
   describe("mean", function () {
     it("returns 0 if no values in series", () => {
@@ -250,7 +425,7 @@ describe("safe-math", function () {
       expect(mean(-Infinity, Infinity)).to.be.NaN;
     });
 
-    it('handles decimal comparisons', () => {
+    it("handles decimal comparisons", () => {
       var actual = mean([0.1, 0.2, 0.3, 0.4]);
 
       expect(actual).to.equal(0.25)
@@ -258,25 +433,25 @@ describe("safe-math", function () {
   });
 
   describe("median", () => {
-    it('returns 0 if no values in series', () => {
+    it("returns 0 if no values in series", () => {
       var actual = median();
 
       expect(actual).to.equal(0);
     });
 
-    it('returns value if only one value in series', () => {
+    it("returns value if only one value in series", () => {
       var actual = median(13);
 
       expect(actual).to.equal(13);
     })
 
-    it('returns median value of an odd number in a series', () => {
+    it("returns median value of an odd number in a series", () => {
       var actual = median([9, 7, 1, 3, 4]);
 
       expect(actual).to.equal(4);
     })
 
-    it('returns median value of an even number in a series', () => {
+    it("returns median value of an even number in a series", () => {
       var actual = median([9, 1, 6, 3, 7, 4]);
 
       expect(actual).to.equal(6);
@@ -318,7 +493,7 @@ describe("safe-math", function () {
       expect(median(-Infinity, 0, Infinity)).to.equal(0);
     });
 
-    it('handles decimal comparisons', () => {
+    it("handles decimal comparisons", () => {
       var actual = median([0.1, 0.2, 0.25, 0.4]);
 
       expect(actual).to.equal(0.25)
@@ -326,25 +501,25 @@ describe("safe-math", function () {
   })
 
   describe("mode", () => {
-    it('returns empty array if no values in series', () => {
+    it("returns empty array if no values in series", () => {
       var actual = mode();
 
       expect(actual).to.deep.equal([]);
     })
 
-    it('returns array of 1 if only one value in series', () => {
+    it("returns array of 1 if only one value in series", () => {
       var actual = mode(13);
 
       expect(actual).to.deep.equal([13]);
     })
 
-    it('returns mode value with most occurrences in a series', () => {
+    it("returns mode value with most occurrences in a series", () => {
       var actual = mode([1, 1, 1, 2, 2, 3]);
 
       expect(actual).to.deep.equal([1]);
     })
 
-    it('returns multiple values with most occurrences in a series', () => {
+    it("returns multiple values with most occurrences in a series", () => {
       var actual = mode([1, 1, 1, 2, 2, 3, 4, 4, 4]);
 
       expect(actual).to.deep.equal([1, 4]);
@@ -382,7 +557,7 @@ describe("safe-math", function () {
       expect(actual).to.deep.equal(expected);
     });
 
-    it('handles decimal comparisons', () => {
+    it("handles decimal comparisons", () => {
       var actual = mode([0.1, 0.2, 0.25, 0.4]);
 
       expect(actual).to.deep.equal([0.1, 0.2, 0.25, 0.4])
@@ -390,19 +565,19 @@ describe("safe-math", function () {
   })
 
   describe("range", () => {
-    it('returns 0 if no values in series', () => {
+    it("returns 0 if no values in series", () => {
       var actual = range();
 
       expect(actual).to.equal(0);
     })
 
-    it('returns 0 if only one value in series', () => {
+    it("returns 0 if only one value in series", () => {
       var actual = range(13);
 
       expect(actual).to.equal(0);
     })
 
-    it('returns difference between highest and lowest values in series', () => {
+    it("returns difference between highest and lowest values in series", () => {
       var actual = range(1, 1, 2, 5, 100, 100);
 
       expect(actual).to.equal(99);
@@ -418,7 +593,7 @@ describe("safe-math", function () {
       expect(range(Infinity, 1, Infinity)).to.equal(Infinity);
     });
 
-    it('handles decimal comparisons', () => {
+    it("handles decimal comparisons", () => {
       var actual = range([0.2, 0.3]);
 
       expect(actual).to.equal(0.1)
