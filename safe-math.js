@@ -15,7 +15,14 @@
  * 4. ascending sort function, used by median.
  */
 
-export { add, minus, multiply, divide, mean, median, mode, range }
+export {
+  // operations
+  add, minus, multiply, divide,
+  // series
+  mean, median, mode, range,
+  // conversions
+  percent, reciprocal, square, sqrt
+}
 
 /**
  * @function add, for safely adding numbers.
@@ -24,8 +31,8 @@ export { add, minus, multiply, divide, mean, median, mode, range }
  * @returns {number} sum
  */
 function add(...values) {
-  return getValues(...values).reduce(function (current, next) {
-    var { left, right, exponent } = expand(current, next);
+  return getValues(...values).reduce(function (augend, addend) {
+    var { left, right, exponent } = expand(augend, addend);
 
     return (left + right) / exponent;
   }, 0);
@@ -41,8 +48,8 @@ function minus(...values) {
   var numbers = getValues(...values);
   var first = numbers.shift()
 
-  return numbers.reduce(function (current, next) {
-    var { left, right, exponent } = expand(current, next);
+  return numbers.reduce(function (minuend, subtrahend) {
+    var { left, right, exponent } = expand(minuend, subtrahend);
 
     return (left - right) / exponent;
   }, first);
@@ -55,8 +62,8 @@ function minus(...values) {
  * @returns {number} product
  */
 function multiply(...values) {
-  return getValues(...values).reduce(function (current, next) {
-    var { left, right, exponent } = expand(current, next);
+  return getValues(...values).reduce(function (multiplicand, multiplier) {
+    var { left, right, exponent } = expand(multiplicand, multiplier);
 
     return (left * right) / (exponent * exponent);
   }, 1);
@@ -72,12 +79,16 @@ function divide(...values) {
   var numbers = getValues(...values);
   var first = numbers.shift()
 
-  return numbers.reduce(function (current, next) {
-    var { left, right, exponent } = expand(current, next);
+  return numbers.reduce(function (dividend, divisor) {
+    var { left, right, exponent } = expand(dividend, divisor);
 
     return (left / right) / exponent;
   }, first);
 }
+
+
+/* Series functions */
+
 
 /**
  * @function mean, for safely calculating the average of a series of numbers.
@@ -88,13 +99,13 @@ function divide(...values) {
 function mean(...values) {
   var size = 0;
 
-  var result = getValues(...values).reduce(function (current, next) {
+  var sum = getValues(...values).reduce(function (current, next) {
     // Expand only next value.
     var e = expand(next);
 
     /*
-     * If next is a number, call add() and increment the set size.
-     * Else just return current add.
+     * If next is a number, call add() and increment the set size, else just
+     * return current sum.
      */
 
     return (
@@ -106,7 +117,7 @@ function mean(...values) {
 
   return (
     size > 0
-      ? result / size
+      ? sum / size
       : size
   );
 }
@@ -169,8 +180,8 @@ function mode(...values) {
   Object.keys(map).forEach(value => {
 
     /*
-     * Push values whose count matches most to the modes array.
-     * Strict equality test means never matching NaN.
+     * Push values whose count matches `most` to the modes array. The strict
+     * equality test means never matching NaN.
      */
 
     (map[value] === most)
@@ -210,7 +221,6 @@ function range(...values) {
 
     value < low
       && (low = value);
-
   });
 
   /*
@@ -219,6 +229,85 @@ function range(...values) {
    */
 
   return add(high, -low);
+}
+
+
+/* Conversion functions */
+
+
+/**
+ * @function percent returns 1/100th of a value.
+ * 
+ * If the value is not functionally numeric or falsy (0), the value is
+ * returned.
+ *
+ * @param {*}
+ * @returns {number}
+ */
+function percent(value) {
+  var number = Object(value).valueOf();
+
+  if (!isNumeric(value) || !isNumeric(number) || !number) {
+    return value
+  }
+
+  return divide(number, 100);
+}
+
+/**
+ * @function reciprocal returns the reciprocal of a value.
+ * 
+ * If the value is not functionally numeric, the value is returned.
+ *  * 
+ * @param {*}
+ * @returns {number} 
+ */
+
+function reciprocal(value) {
+  var number = Object(value).valueOf();
+
+  if (!isNumeric(value) || !isNumeric(number)) {
+    return value
+  }
+
+  return Math.pow(number, -1);
+}
+
+/**
+ * @function square returns the square of a value.
+ * 
+ * If the value is not functionally numeric, the value is returned.
+ *
+ * @param {*}
+ * @returns {number} 
+ */
+function square(value) {
+  var number = Object(value).valueOf();
+
+  if (!isNumeric(value) || !isNumeric(number)) {
+    return value
+  }
+
+  return multiply(number, number);
+}
+
+/**
+ * @function sqrt returns the square root of a value.
+ * 
+ * If the value is not functionally numeric or is numerically negative, an
+ * Error object is returned.
+ *
+ * @param {*}
+ * @returns {number} 
+ */
+function sqrt(value) {
+  var number = Object(value).valueOf();
+
+  if (!isNumeric(value) || !isNumeric(number) || number < 0) {
+    return new Error(`Invalid Input, ${value}`)
+  }
+
+  return Math.sqrt(number);
 }
 
 
@@ -266,9 +355,9 @@ function isNumeric(a) {
    * string,
    */
 
-  var reVoid = /^(NaN|null|undefined|)$/;
+  var reInvalid = /^(NaN|null|undefined|)$/;
 
-  return !reVoid.test(v);
+  return !reInvalid.test(v);
 }
 
 /**
@@ -276,32 +365,40 @@ function isNumeric(a) {
  * returns an object containing the x & y integer pair, plus the exponent by
  * which to reduce the result of an operation on them to their original decimal
  * precision.
+ *  
+ * Example: given 1.23 and 1.234, function returns an object with 3 integers:
+ * 
+ *    left: 1230
+ *    right: 1234
+ *    exponent: 1000
  *
  * Originally part of gist at
  * https://gist.github.com/dfkaye/c2210ceb0f813dda498d22776f98d48a
  * 
  * @param {*} x 
  * @param {*} y
- * @returns {object}
+ * @returns {{ x: number, y: number, exponent: number }}
  */
 function expand(x, y) {
   // Object(value).valueOf() trick for "functionally numeric" objects.
+
   x = Object(x).valueOf();
   y = Object(y).valueOf();
 
-  // Coerce to strings to numbers (and remove formatting commas).
-  var reMatch = /string/
+  // Format strings and convert into numbers.
+
   var reCommas = /[\,]/g
 
-  if (reMatch.test(typeof x)) {
+  if (typeof x == "string") {
     x = +x.toString().replace(reCommas, '');
   }
 
-  if (reMatch.test(typeof y)) {
+  if (typeof y == "string") {
     y = +y.toString().replace(reCommas, '');
   }
 
-  // Expand each to integer values based on largest mantissa length.
+  // Determine exponent based on largest mantissa length.
+
   var reDecimal = /[\.]/
   var a = reDecimal.test(x) && x.toString().split('.')[1].length
   var b = reDecimal.test(y) && y.toString().split('.')[1].length
@@ -309,10 +406,14 @@ function expand(x, y) {
   var d = Math.pow(10, c)
 
   /*
-   * left & right number pair, plus the expansion factor.
-   * The multiplication operator, *, coerces non-numerics to their equivalent,
-   * e.g., {} => NaN, true => 1, [4] => '4' => 4
+   * Expand x and y to integer values multiplying by exponent, converting
+   * non-numeric values to their numeric equivalent. For examples,
+   *  {} becomes NaN,
+   *  true becomes 1,
+   *  [4] becomes '4' which becomes 4,
+   * and so on.
    */
+
   return {
     left: x * d,
     right: y * d,
