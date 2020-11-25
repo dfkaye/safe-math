@@ -1,6 +1,6 @@
 import { add, minus, multiply, divide } from "../safe-math.js";
 
-describe("operations", () => {
+describe("Operators", () => {
 
   var { expect } = chai;
 

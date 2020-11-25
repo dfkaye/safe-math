@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Safer floating-point math operations in JavaScript that return results we expect, so that 0.1 + 0.2 adds up to 0.3, e.g.",
   "main": "safe-math.js",
   "directories": {
