@@ -1,4 +1,4 @@
-import { percent, reciprocal, square, sqrt } from "../safe-math.js";
+import { percent, power, reciprocal, square, sqrt } from "../safe-math.js";
 
 describe("Conversions", function () {
 
@@ -66,6 +66,62 @@ describe("Conversions", function () {
       expect(actual, "should return 5/100").to.equal(5 / 100);
     });
   });
+
+  describe("power", () => {
+    it("missing params", () => {
+      expect(power, "should throw an Error").to.throw;
+    });
+
+    it("undefined", () => {
+      var actual = power({ value: undefined, exponent: undefined });
+
+      expect(actual, "should return undefined").to.be.undefined;
+    });
+
+    it("null", () => {
+      var actual = power({ value: null, exponent: 1 });
+
+      expect(actual, "should return null").to.be.null;
+    });
+
+    it("NaN", () => {
+      var actual = power({ value: NaN, exponent: 1 });
+
+      expect(actual, "should return null").to.be.NaN;
+    });
+
+    it("0", () => {
+      var actual = power({ value: 0, exponent: 1 });
+
+      expect(actual, "should return 0").to.equal(0);
+    });
+
+    it("Number(2) to 4", () => {
+      var actual = power({ value: 2, exponent: 4 });
+
+      expect(actual, "should return 16").to.equal(16);
+    });
+
+    it("String(2) to String(4)", () => {
+      var actual = power({ value: "2", exponent: "4" });
+
+      expect(actual, "should return 16").to.equal(16);
+    });
+
+    it("Boolean(0) to Boolean(0)", () => {
+      var actual = power({ value: Boolean(0), exponent: Boolean(0) });
+
+      expect(actual, "should return 1").to.equal(1);
+    });
+
+    it("Functionally Numeric Objects", () => {
+      var value = { valueOf: () => 5 }
+      var exponent = { valueOf: () => 4 }
+      var actual = power({ value, exponent });
+
+      expect(actual, "should return 625").to.equal(625);
+    });
+  })
 
   describe("reciprocal", function () {
     it("undefined", () => {

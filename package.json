@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Safer floating-point math operations in JavaScript that return results we expect, so that 0.1 + 0.2 adds up to 0.3, e.g.",
   "main": "safe-math.js",
   "directories": {
@@ -18,8 +18,9 @@
     "url": "git+https://github.com/dfkaye/safe-math.git"
   },
   "keywords": [
-    "floating-point-math",
-    "safe-math"
+    "floating-point",
+    "safe-math",
+    "safe-floating-point-math"
   ],
   "author": "dfkaye",
   "license": "MIT",

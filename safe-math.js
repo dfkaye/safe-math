@@ -21,7 +21,7 @@ export {
   // series
   mean, median, mode, range,
   // conversions
-  percent, reciprocal, square, sqrt
+  percent, power, reciprocal, square, sqrt
 }
 
 /**
@@ -247,7 +247,7 @@ function range(...values) {
 function percent(value) {
   var number = Object(value).valueOf();
 
-  if (!isNumeric(value) || !isNumeric(number) || !number) {
+  if (!isNumeric(value) || !number) {
     return value
   }
 
@@ -255,22 +255,35 @@ function percent(value) {
 }
 
 /**
- * @function reciprocal returns the reciprocal of a value.
+ * @function power returns a value raised to the exponent, e.g., 2 to the power
+ * of 3 returns 8.
  * 
  * If the value is not functionally numeric, the value is returned.
- *  * 
- * @param {*}
+ * 
+ * @param {{value: *, exponent: *}} param0
  * @returns {number} 
  */
-
-function reciprocal(value) {
-  var number = Object(value).valueOf();
-
-  if (!isNumeric(value) || !isNumeric(number)) {
+function power({ value, exponent }) {
+  if (!isNumeric(value) || !isNumeric(exponent)) {
     return value
   }
 
-  return Math.pow(number, -1);
+  var number = Object(value).valueOf();
+  var power = Object(exponent).valueOf();
+
+  return Math.pow(number, power);
+}
+
+/**
+ * @function reciprocal returns the reciprocal of a value.
+ * 
+ * If the value is not functionally numeric, the value is returned.
+ *
+ * @param {*}
+ * @returns {number} 
+ */
+function reciprocal(value) {
+  return power({ value, exponent: -1 });
 }
 
 /**
@@ -284,7 +297,7 @@ function reciprocal(value) {
 function square(value) {
   var number = Object(value).valueOf();
 
-  if (!isNumeric(value) || !isNumeric(number)) {
+  if (!isNumeric(value)) {
     return value
   }
 
@@ -303,7 +316,7 @@ function square(value) {
 function sqrt(value) {
   var number = Object(value).valueOf();
 
-  if (!isNumeric(value) || !isNumeric(number) || number < 0) {
+  if (!isNumeric(value) || number < 0) {
     return new Error(`Invalid Input, ${value}`)
   }
 
