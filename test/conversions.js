@@ -120,10 +120,11 @@ describe("Conversions", function () {
       expect(actual, "should return 0").to.equal(0);
     });
 
-    it("Number(2) to 4", () => {
-      var actual = power({ value: 2, exponent: 4 });
+    it("Number(1.1) to 2", () => {
+      var actual = power({ value: 1.1, exponent: 2 });
 
-      expect(actual, "should return 16").to.equal(16);
+      // Should not return 1.2100000000000002
+      expect(actual, "should return 1.21").to.equal(1.21);
     });
 
     it("String(2) to String(4)", () => {

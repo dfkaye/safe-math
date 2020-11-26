@@ -258,7 +258,6 @@ function percent(value) {
  * @function power returns a value raised to the exponent, e.g., 2 to the power
  * of 3 returns 8.
  * 
- * 
  * If either the value or the exponent is not functionally numeric, the value
  * is returned.
  * 
@@ -272,6 +271,9 @@ function percent(value) {
  *  Math.pow(9, "") => 1
  *  Math.pow(9, "  ") => 1
  * 
+ * Function ultimately relies on multiply() to guard against impedance cases,
+ * such as `Math.pow(1.1, 2) => 1.2100000000000002`.
+ * 
  * @param {{value: *, exponent: *}} param0
  * @returns {number} 
  */
@@ -282,8 +284,13 @@ function power({ value, exponent = 1 }) {
 
   var number = Object(value).valueOf();
   var power = Object(exponent).valueOf();
+  var length = Math.abs(+power);
+  var field = power > 0
+    ? number
+    : 1 / number;
+  var series = Array(length).fill(field);
 
-  return Math.pow(number, power);
+  return multiply(series)
 }
 
 /**
@@ -307,13 +314,7 @@ function reciprocal(value) {
  * @returns {number} 
  */
 function square(value) {
-  if (!isNumeric(value)) {
-    return value
-  }
-
-  var number = Object(value).valueOf();
-
-  return multiply(number, number);
+  return power({ value, exponent: 2 })
 }
 
 /**
