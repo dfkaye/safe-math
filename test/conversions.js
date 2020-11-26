@@ -72,10 +72,34 @@ describe("Conversions", function () {
       expect(power, "should throw an Error").to.throw;
     });
 
-    it("undefined", () => {
-      var actual = power({ value: undefined, exponent: undefined });
+    it("undefined to the 3", () => {
+      var actual = power({ value: undefined, exponent: 3 });
 
       expect(actual, "should return undefined").to.be.undefined;
+    });
+
+    it("3 to the undefined", () => {
+      var actual = power({ value: 3, exponent: undefined });
+
+      expect(actual, "should return 3").to.equal(3);
+    });
+
+    it("3 to the null", () => {
+      var actual = power({ value: 3, exponent: null });
+
+      expect(actual, "should return 3").to.equal(3);
+    });
+
+    it("3 to the empty string", () => {
+      var actual = power({ value: 3, exponent: "" });
+
+      expect(actual, "should return 3").to.equal(3);
+    });
+
+    it("3 to the blank string", () => {
+      var actual = power({ value: 3, exponent: "    " });
+
+      expect(actual, "should return 3").to.equal(3);
     });
 
     it("null", () => {
