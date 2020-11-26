@@ -261,8 +261,6 @@ function percent(value) {
  * If either the value or the exponent is not functionally numeric, the value
  * is returned.
  * 
- * If the value is not provided, an error will be thrown.
- * 
  * If the exponent is not provided, it is assigned 1 by default, to mitigate
  * these cases with Math.pow():
  * 
@@ -277,20 +275,52 @@ function percent(value) {
  * @param {{value: *, exponent: *}} param0
  * @returns {number} 
  */
-function power({ value, exponent = 1 }) {
+function power({ value = undefined, exponent = 1 }) {
   if (!isNumeric(value) || !isNumeric(exponent)) {
     return value
   }
 
   var number = Object(value).valueOf();
   var power = Object(exponent).valueOf();
-  var length = Math.abs(+power);
-  var field = power > 0
-    ? number
-    : 1 / number;
-  var series = Array(length).fill(field);
+  var { "0": length, "1": fraction } = power.toString().split('.');
 
-  return multiply(series)
+  if (fraction) {
+
+    /*
+     * 26 November 2020: Solving for fractional exponents.
+     * If power contains a fraction, sign it the same as the integer length,
+     * then use Math.pow on number to the fraction, and multiply that by number
+     * to the integer length.
+     */
+
+    fraction = +("." + fraction);
+
+    if (power < 0) {
+      fraction = fraction * -1
+    }
+
+    var left = Math.pow(number, fraction)
+    var right = Math.pow(number, length)
+
+    return multiply(left, right)
+  } else {
+
+    /*
+     * 26 November 2020 continued: Otherwise, if the power is positive, fill a
+     * series array of length equal to exponent power with the number and pass
+     * that to multiply to proces the series. If power is negative, fill the
+     * series with the reciprocal of the number, which is ironic as reciprocal
+     * function delegates to the power function.
+     */
+
+    var abs = Math.abs(power);
+    var field = power > 0
+      ? number
+      : 1 / number;
+    var series = Array(abs).fill(field);
+
+    return multiply(series)
+  }
 }
 
 /**
@@ -320,20 +350,19 @@ function square(value) {
 /**
  * @function sqrt returns the square root of a value.
  * 
- * If the value is not functionally numeric or is numerically negative, an
- * Error object is returned.
+ * If the value is numerically negative, an Error object is returned.
+ * 
+ * If the value is not functionally numeric the value is returned.
  *
  * @param {*}
  * @returns {number} 
  */
 function sqrt(value) {
-  var number = Object(value).valueOf();
-
-  if (!isNumeric(value) || number < 0) {
-    return new Error(`Invalid Input, ${value}`)
+  if (value < 0) {
+    return new Error("Invalid Input")
   }
 
-  return Math.sqrt(number);
+  return power({ value, exponent: 0.5 });
 }
 
 

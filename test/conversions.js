@@ -69,7 +69,12 @@ describe("Conversions", function () {
 
   describe("power", () => {
     it("missing params", () => {
-      expect(power, "should throw an Error").to.throw;
+      var exec = function () {
+        // console.log("execute with missing params");
+        power();
+      };
+
+      expect(exec, "should throw an Error").to.throw();
     });
 
     it("undefined to the 3", () => {
@@ -146,6 +151,52 @@ describe("Conversions", function () {
 
       expect(actual, "should return 625").to.equal(625);
     });
+
+    describe("with negative exponents", () => {
+      it("2 to the -2", () => {
+        var actual = power({ value: 2, exponent: -2 })
+
+        expect(actual, "should return 0.25").to.equal(0.25);
+      })
+    });
+
+    describe("with fractional exponents", () => {
+      it("2 to the 0.5", () => {
+        var actual = power({ value: 2, exponent: 0.5 })
+
+        expect(actual, "should return 1.4142135623730951").to.equal(1.4142135623730951);
+      })
+
+      it("2 to the -0.5", () => {
+        var actual = power({ value: 2, exponent: -0.5 })
+
+        expect(actual, "should return 0.7071067811865475").to.equal(0.7071067811865475);
+      })
+
+      it("1.1 to the 1.1", () => {
+        var actual = power({ value: 1.1, exponent: 1.1 })
+
+        expect(actual, "should return 1.1105342410545758").to.equal(1.1105342410545758);
+      })
+
+      it("1.1 to the -1.1", () => {
+        var actual = power({ value: 1.1, exponent: -1.1 })
+
+        expect(actual, "should return 0.900467507467747").to.equal(0.900467507467747);
+      })
+
+      it("2 to the 2.5", () => {
+        var actual = power({ value: 2, exponent: 2.5 })
+
+        expect(actual, "should return 5.656854249492381").to.equal(5.656854249492381);
+      })
+
+      it("2 to the -2.5", () => {
+        var actual = power({ value: 2, exponent: -2.5 })
+
+        expect(actual, "should return 0.17677669529663687").to.equal(0.17677669529663687);
+      })
+    })
   })
 
   describe("reciprocal", function () {
@@ -260,19 +311,19 @@ describe("Conversions", function () {
     it("undefined", () => {
       var actual = sqrt();
 
-      expect(actual, "should return Error").to.be.an("error");
+      expect(actual, "should return undefined").to.be.undefined;
     });
 
     it("null", () => {
       var actual = sqrt(null);
 
-      expect(actual, "should return Error").to.be.an("error");
+      expect(actual, "should return null").to.be.null;
     });
 
     it("NaN", () => {
       var actual = sqrt(NaN);
 
-      expect(actual, "should return Error").to.be.an("error");
+      expect(actual, "should return NaN").to.be.NaN;
     });
 
     it("-1", () => {
