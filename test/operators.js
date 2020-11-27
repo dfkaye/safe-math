@@ -90,12 +90,11 @@ describe("Operators", () => {
       expect(actual).to.equal(0.3);
     });
 
-    it("0.1 - 0.3 returns -0.2", () => {
+    it("0.1 + -0.3 returns -0.2", () => {
       var actual = add([0.1, -0.3]);
 
       expect(actual).to.equal(-0.2);
     });
-    //- 0.15 / 0.1 should return 1.5 instead of 1.4999999999999998.
   })
 
   describe("minus", function () {
@@ -280,7 +279,7 @@ describe("Operators", () => {
       expect(actual).to.equal(0.01);
     });
 
-    it("0.15 / 0.1 returns 1.5", () => {
+    it("0.15 * (1 / 0.1) returns 1.5", () => {
       var actual = multiply([0.15, (1 / 0.1)]);
 
       expect(actual).to.equal(1.5);

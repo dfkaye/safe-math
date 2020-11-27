@@ -68,7 +68,7 @@ describe("Conversions", function () {
   });
 
   describe("power", () => {
-    it("missing params", () => {
+    it("missing params should throw an Error", () => {
       var exec = function () {
         // console.log("execute with missing params");
         power();
@@ -326,7 +326,7 @@ describe("Conversions", function () {
       expect(actual, "should return NaN").to.be.NaN;
     });
 
-    it("-1", () => {
+    it("-1 returns an Error", () => {
       var actual = sqrt(-1);
 
       expect(actual, "should return Error").to.be.an("error");
