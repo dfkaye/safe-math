@@ -82,7 +82,8 @@ function divide(...values) {
   return numbers.reduce(function (dividend, divisor) {
     var { left, right, exponent } = expand(dividend, divisor);
 
-    return (left / right) / exponent;
+    // exponent not needed
+    return left / right;
   }, first);
 }
 

@@ -338,7 +338,7 @@ describe("Operators", () => {
         new String(0.2)
       ]);
 
-      expect(actual).to.equal(0.05);
+      expect(actual).to.equal(0.5);
     })
 
     it("handles 'functionally numeric' objects", () => {
@@ -351,19 +351,19 @@ describe("Operators", () => {
         }
       ]);
 
-      expect(actual).to.equal(0.05);
+      expect(actual).to.equal(0.5);
     })
 
     it("0.1 / 10 returns 0.01", () => {
       var actual = divide(0.1, 10)
 
-      expect(actual).to.equal(0.001)
+      expect(actual).to.equal(0.01)
     })
 
     it("0.15 / 0.1 returns 1.5", () => {
       var actual = divide(0.15, 0.1)
 
-      expect(actual).to.equal(0.015)
+      expect(actual).to.equal(1.5)
     })
   })
 })
