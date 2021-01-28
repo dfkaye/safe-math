@@ -284,6 +284,13 @@ describe("Operators", () => {
 
       expect(actual).to.equal(1.5);
     });
+
+    it(".14 * 100 returns 14", () => {
+      // And not 14.000000000000002
+      var actual = multiply([14, .14]);
+
+      expect(actual).to.equal(1.96);
+    })
   });
 
   describe("divide", () => {

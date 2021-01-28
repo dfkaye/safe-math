@@ -463,16 +463,28 @@ function expand(x, y) {
 
   /*
    * Expand x and y to integer values multiplying by exponent, converting
-   * non-numeric values to their numeric equivalent. For examples,
+   * non-numeric values to their numeric equivalent, AND passing conversions to
+   * the parseInt() function.
+   * 
+   * Some examples:
    *  {} becomes NaN,
    *  true becomes 1,
    *  [4] becomes '4' which becomes 4,
-   * and so on.
+   * and so on. 
+   * 
+   * Why parseInt()?
+   *  Because, for example, .14 * 100 still produces 14.000000000000002.
+   * 
+   * Why the self equality checks?
+   *  Those are !NaN checks. parseInt(Infinity) returns NaN
    */
 
+  var left = parseInt(x * d);
+  var right = parseInt(y * d);
+
   return {
-    left: x * d,
-    right: y * d,
+    left: left === left ? left : x * d,
+    right: right === right ? right : y * d,
     exponent: d
   }
 }
