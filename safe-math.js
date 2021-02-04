@@ -80,7 +80,7 @@ function divide(...values) {
   var first = numbers.shift()
 
   return numbers.reduce(function (dividend, divisor) {
-    var { left, right, exponent } = expand(dividend, divisor);
+    var { left, right } = expand(dividend, divisor);
 
     // exponent not needed
     return left / right;
@@ -453,11 +453,31 @@ function expand(x, y) {
     y = +y.toString().replace(reCommas, '');
   }
 
-  // Determine exponent based on largest mantissa length.
+  // https://github.com/dfkaye/safe-math/issues/1
+  // Special case: Given very small numbers, the runtime may convert the value
+  // to scientific notation. For example, 0.0000000000186264514923095703125 is 
+  // converted to 1.862645149230957e-11. In that case we set left and right to
+  // x and y respectively, and set d the exponent to 1, and return early.
 
-  var reDecimal = /[\.]/
-  var a = reDecimal.test(x) && x.toString().split('.')[1].length
-  var b = reDecimal.test(y) && y.toString().split('.')[1].length
+  var sX = x.toString()
+  var sY = y.toString()
+  var mX = sX.split('.')[1] || ""
+  var mY = sY.split('.')[1] || ""
+  var dX = mX.split('e-')
+  var dY = mY.split('e-')
+
+  if (dX[1] || dY[1]) {
+    return {
+      left: x,
+      right: y,
+      exponent: 1
+    }
+  }
+
+  // Main case: determine exponent based on largest mantissa length.
+
+  var a = mX.length
+  var b = mY.length
   var c = a > b ? a : b
   var d = Math.pow(10, c)
 

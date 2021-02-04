@@ -373,4 +373,52 @@ describe("Operators", () => {
       expect(actual).to.equal(1.5)
     })
   })
+
+  describe("very small numbers in scientific notation", () => {
+    // https://github.com/dfkaye/safe-math/issues/1
+
+    it("add", () => {
+      var actual = add([
+        0.0000000000186264514923095703125, // numeric
+        "0.0000000000186264514923095703125" // string
+      ]);
+
+      var expected = 0.0000000000186264514923095703125 + 0.0000000000186264514923095703125;
+
+      expect(actual).to.equal(expected);
+    });
+
+    it("multiply", () => {
+      var actual = multiply([
+        0.0000000000186264514923095703125, // numeric
+        "0.0000000000186264514923095703125" // string
+      ]);
+
+      var expected = 0.0000000000186264514923095703125 * "0.0000000000186264514923095703125";
+
+      expect(actual).to.equal(expected);
+    });
+
+    it("minus", () => {
+      var actual = minus([
+        0.0000000000186264514923095703125, // numeric
+        "0.0000000000186264514923095703125" // string
+      ]);
+
+      var expected = 0.0000000000186264514923095703125 - "0.0000000000186264514923095703125";
+
+      expect(actual).to.equal(expected);
+    });
+
+    it("divide", () => {
+      var actual = divide([
+        0.0000000000186264514923095703125, // numeric
+        "0.0000000000186264514923095703125" // string
+      ]);
+
+      var expected = 0.0000000000186264514923095703125 / "0.0000000000186264514923095703125";
+
+      expect(actual).to.equal(expected);
+    });
+  })
 })
